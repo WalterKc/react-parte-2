@@ -1,0 +1,32 @@
+{
+  "name": "react-clase-dos",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "bootstrap": "^3.4.1",
+    "classnames": "^2.2.6",
+    "react": "^16.14.0",
+    "react-bootstrap": "^2.7.2",
+    "react-dom": "^16.14.0",
+    "react-scripts": "3.4.0",
+    "reactstrap": "^9.1.6"
+  },
+  "scripts": {
+    "start": "react-scripts start"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
