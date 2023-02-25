@@ -8,8 +8,9 @@ import FocusableInput from "./FocusableInput";
 import UglyClass from "./UglyClass";
 import FancyButton from "../small/FancyButton";
 import TicTacToe from "./TicTacToe";
-import { tablero } from "./juego-de-memoria";
-import "bootstrap/dist/css/bootstrap.min.css";
+//import { tablero } from "./juego-de-memoria";
+import { Board } from "./juego-de-memoria";
+//import "bootstrap/dist/css/bootstrap.min.css";
 
 //bueno, esto lo vamos a tocar por todos lados, hasta que no este conforme, no vamos a pasar a la clase 3
 //asumo que voy a estar varios dias aca
@@ -45,7 +46,7 @@ const pages = {
   },
   juegoMemoria: {
     name: "juego Memoria",
-    component: tablero,
+    component: Board,
   },
 };
 let keys = Object.keys(pages); //otra manera mas comoda ,transforma el array de objetos en un array normal
