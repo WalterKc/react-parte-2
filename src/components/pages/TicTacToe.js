@@ -1,8 +1,9 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import cx from 'classnames';
-import './TicTacToe.css';
-import FancyButton from '../small/FancyButton';
+import React from "react";
+import { useState, useEffect } from "react";
+import PropTypes from "prop-types";
+import cx from "classnames";
+import "./TicTacToe.css";
+import FancyButton from "../small/FancyButton";
 
 /* 
   Esta tarea consiste en hacer que el juego funcione, para lograr eso deben completar el componente 
@@ -23,6 +24,10 @@ import FancyButton from '../small/FancyButton';
   Verán que los diferentes componentes utilizados están completados y llevan sus propios propTypes
   Esto les dará algunas pistas
 */
+///el juego de la memoria teminado, ahora vamos a completar esto
+//este es la funcion que representa un cuadro, espera una funcion onclick de arriba(de otra funcion mayor)
+//TABLERO HECHO, ahora vamos a enviearle informacion
+//cuando la encontremos vamos a explicar lo que hace
 
 const Square = ({ value, onClick = () => {} }) => {
   return (
@@ -32,13 +37,13 @@ const Square = ({ value, onClick = () => {} }) => {
   );
 };
 Square.propTypes = {
-  value: PropTypes.oneOf(['X', 'O', '']),
+  value: PropTypes.oneOf(["X", "O", ""]),
   onClick: PropTypes.func,
 };
 
 const WinnerCard = ({ show, winner, onRestart = () => {} }) => {
   return (
-    <div className={cx('winner-card', { 'winner-card--hidden': !show })}>
+    <div className={cx("winner-card", { "winner-card--hidden": !show })}>
       <span className="winner-card-text">
         {winner ? `Player ${winner} has won the game!` : "It's a tie!"}
       </span>
@@ -46,48 +51,192 @@ const WinnerCard = ({ show, winner, onRestart = () => {} }) => {
     </div>
   );
 };
-
 WinnerCard.propTypes = {
-  // Esta propiedad decide si el componente se muestra o está oculto
-  // También se podría mostrar el componente usando un if (&&), pero usamos esta prop para mostrar los estilos correctamente.
   show: PropTypes.bool.isRequired,
-  winner: PropTypes.oneOf(['X', 'O']),
+  winner: PropTypes.oneOf(["X", "O"]),
   onRestart: PropTypes.func,
 };
+const getWinner = (cuadros) => {
+  let ganador = "";
+  const patrones = [
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
+  for (let x = 0; x < 8; x++) {
+    let [a, b, c] = patrones[x];
 
-const getWinner = tiles => {
-  // calcular el ganador del partido a partir del estado del tablero
-  // (existen varias formas de calcular esto, una posible es listar todos los
-  // casos en los que un jugador gana y ver si alguno sucede)
+    if (
+      cuadros[a] === cuadros[b] &&
+      cuadros[a] === cuadros[c] &&
+      cuadros[a] !== ""
+    ) {
+      return cuadros[a];
+
+      break;
+    }
+  }
   return null;
 };
+let turno = 0;
+const useTicTacToeGameState = (initialPlayer) => {
+  const [cuadros, setCuadros] = useState(Array(9).fill(""));
+  const [currentPlayer, setCurrentPlayer] = useState(initialPlayer);
+  const [winner, setWinner] = useState(null);
+  const [gameEnded, setGameEnded] = useState(false);
 
-const useTicTacToeGameState = initialPlayer => {
-  const tiles = [];
-  const currentPlayer = initialPlayer;
-  const winner = getWinner(tiles);
-  const gameEnded = false;
+  let test = "X";
+  const logicaDelClick = (e, indiceCuadro, jugador) => {
+    console.log(e.target);
+    console.log(e.target.innerText);
+    console.log(indiceCuadro);
+    console.log(" test anterior", test);
+    if (test === "X") {
+      test = "O";
+    } else if (test === "O") {
+      test = "X";
+    }
+    setTileTo(indiceCuadro, jugador);
+    console.log(" test posterior", test);
+    console.log(" cuadro", cuadros);
 
-  const setTileTo = (tileIndex, player) => {
-    // convertir el tile en la posición tileIndex al jugador seleccionado
-    // ejemplo: setTileTo(0, 'X') -> convierte la primera casilla en 'X'
+    turno += 1;
+    console.log(turno);
+  };
+
+  const setTileTo = (indiceCuadro, jugador) => {
+    setCuadros(
+      cuadros.map((elemento, indice) =>
+        indice === indiceCuadro ? jugador : elemento
+      )
+    );
+    setPlayer();
+  };
+  const setPlayer = () => {
+    setCurrentPlayer(currentPlayer === "X" ? "O" : "X");
   };
   const restart = () => {
-    // Reiniciar el juego a su estado inicial
+    setGameEnded(false);
+    setCuadros(Array(9).fill(""));
+    setWinner(null);
+    setCurrentPlayer(initialPlayer);
   };
+  useEffect(() => {
+    console.log(" GET WINNER", getWinner(cuadros));
+    if (getWinner(cuadros) === "X" || getWinner(cuadros) === "O") {
+      setWinner(getWinner(cuadros));
+      setGameEnded(true);
+    }
+  });
 
-  // por si no reconocen esta sintáxis, es solamente una forma más corta de escribir:
-  // { tiles: tiles, currentPlayer: currentPlayer, ...}
-  return { tiles, currentPlayer, winner, gameEnded, setTileTo, restart };
+  return {
+    cuadros,
+    currentPlayer,
+    winner,
+    gameEnded,
+    logicaDelClick,
+    setTileTo,
+    restart,
+  };
 };
 
 const TicTacToe = () => {
-  // const { tiles, currentPlayer, winner, gameEnded, setTileTo, restart } = useTicTacToeGameState('X');
+  const {
+    cuadros,
+    currentPlayer,
+    winner,
+    gameEnded,
+    logicaDelClick,
+    setTileTo,
+    restart,
+  } = useTicTacToeGameState("X");
   return (
     <div className="tictactoe">
-      {/* Este componente debe contener la WinnerCard y 9 componentes Square, 
-      separados en tres filas usando <div className="tictactoe-row">{...}</div> 
-      para separar los cuadrados en diferentes filas */}
+      <WinnerCard show={gameEnded} winner={winner} onRestart={restart} />
+
+      <div className="tictactoe-row">
+        <Square
+          value={cuadros[0]}
+          onClick={(e) =>
+            e.target.innerText === ""
+              ? logicaDelClick(e, 0, currentPlayer)
+              : console.log(" aca ya hay una letra")
+          }
+        />
+        <Square
+          value={cuadros[1]}
+          onClick={(e) =>
+            e.target.innerText === ""
+              ? logicaDelClick(e, 1, currentPlayer)
+              : console.log(" aca ya hay una letra")
+          }
+        />
+        <Square
+          value={cuadros[2]}
+          onClick={(e) =>
+            e.target.innerText === ""
+              ? logicaDelClick(e, 2, currentPlayer)
+              : console.log(" aca ya hay una letra")
+          }
+        />
+      </div>
+      <div className="tictactoe-row">
+        <Square
+          value={cuadros[3]}
+          onClick={(e) =>
+            e.target.innerText === ""
+              ? logicaDelClick(e, 3, currentPlayer)
+              : console.log(" aca ya hay una letra")
+          }
+        />
+        <Square
+          value={cuadros[4]}
+          onClick={(e) =>
+            e.target.innerText === ""
+              ? logicaDelClick(e, 4, currentPlayer)
+              : console.log(" aca ya hay una letra")
+          }
+        />
+        <Square
+          value={cuadros[5]}
+          onClick={(e) =>
+            e.target.innerText === ""
+              ? logicaDelClick(e, 5, currentPlayer)
+              : console.log(" aca ya hay una letra")
+          }
+        />
+      </div>
+      <div className="tictactoe-row">
+        <Square
+          value={cuadros[6]}
+          onClick={(e) =>
+            e.target.innerText === ""
+              ? logicaDelClick(e, 6, currentPlayer)
+              : console.log(" aca ya hay una letra")
+          }
+        />
+        <Square
+          value={cuadros[7]}
+          onClick={(e) =>
+            e.target.innerText === ""
+              ? logicaDelClick(e, 7, currentPlayer)
+              : console.log(" aca ya hay una letra")
+          }
+        />
+        <Square
+          value={cuadros[8]}
+          onClick={(e) =>
+            e.target.innerText === ""
+              ? logicaDelClick(e, 8, currentPlayer)
+              : console.log(" aca ya hay una letra")
+          }
+        />
+      </div>
     </div>
   );
 };
